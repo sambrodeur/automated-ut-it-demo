@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: resource-server-demo
+  datasource:
+    url: jdbc:h2:mem:companydb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jackson:
+    mapper:
+      sort-properties-alphabetically: false
+    serialization:
+      order-map-entries-by-keys: false
+  mvc:
+    apiversion:
+      default-version: 1
+  sql:
+    init:
+      mode: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  show-actuator: false
+  override-with-generic-response: false
+
+server:
+  error:
+    include-stacktrace: never
+
+logging:
+  level:
+    root: INFO

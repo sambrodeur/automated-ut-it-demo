@@ -58,7 +58,7 @@ public class ContactDAOImpl implements ContactDAO {
         """;
 
     return jdbcClient.sql(sql)
-      .param(id)
+      .param("id", id)
       .query(this::mapRow)
       .single();
   }
@@ -117,20 +117,6 @@ public class ContactDAOImpl implements ContactDAO {
     jdbcClient.sql(sql)
       .param("COMPANY_ID", companyId)
       .update();
-  }
-
-  @Override
-  public List<ContactDB> findByContactType(ContactType contactType) {
-    String sql = """
-        SELECT *
-        FROM contact
-        WHERE contact_type = ?
-        """;
-
-    return jdbcClient.sql(sql)
-      .param(contactType.name())
-      .query(this::mapRow)
-      .list();
   }
 
   @Override

@@ -1,7 +1,6 @@
 package io.github.sambrodeur.resource.server.demo.contact.dto;
 
 import io.github.sambrodeur.resource.server.demo.contact.ContactType;
-import io.github.sambrodeur.resource.server.demo.rest.api.contact.ContactTypeModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

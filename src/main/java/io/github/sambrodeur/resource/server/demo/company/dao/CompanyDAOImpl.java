@@ -97,6 +97,7 @@ public class CompanyDAOImpl implements CompanyDAO {
   @Override
   public void deleteById(Integer id) {
     String sql = "DELETE FROM company WHERE id = ?";
+
     jdbcClient.sql(sql)
       .param(id)
       .update();
@@ -112,20 +113,6 @@ public class CompanyDAOImpl implements CompanyDAO {
 
     return jdbcClient.sql(sql)
       .param("COMPANY_TYPE", companyType.getKey())
-      .query(this::mapRow)
-      .list();
-  }
-
-  @Override
-  public List<Company> findByName(String name) {
-    String sql = """
-        SELECT id, name, company_type, creation_date, modification_date
-        FROM company
-        WHERE name LIKE ?
-        """;
-
-    return jdbcClient.sql(sql)
-      .param("%" + name + "%")
       .query(this::mapRow)
       .list();
   }

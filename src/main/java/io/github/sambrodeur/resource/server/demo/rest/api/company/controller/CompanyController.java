@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +31,7 @@ import java.util.List;
 @RequestMapping("/api/companies")
 @RequiredArgsConstructor
 @Tag(name = "Company", description = "Company management APIs")
+@Slf4j
 public class CompanyController {
 
   private final CompanyService companyService;
@@ -74,6 +76,7 @@ public class CompanyController {
       Company updatedCompany = companyService.updateCompany(id, companyModelMapper.map(crudCompanyModel));
       return ResponseEntity.ok(updatedCompany);
     } catch (IllegalArgumentException e) {
+      log.info("Company not found", e);
       return ResponseEntity.notFound().build();
     }
   }
@@ -86,7 +89,8 @@ public class CompanyController {
     try {
       companyService.deleteCompany(id);
       return ResponseEntity.noContent().build();
-    } catch (Exception e) {
+    } catch (Exception ex) {
+      log.info("Company not found", ex);
       return ResponseEntity.notFound().build();
     }
   }

@@ -4,13 +4,11 @@ import io.github.sambrodeur.resource.server.demo.company.Company;
 import io.github.sambrodeur.resource.server.demo.company.CompanyType;
 import io.github.sambrodeur.resource.server.demo.company.dao.CompanyDAO;
 import io.github.sambrodeur.resource.server.demo.company.dto.CRUDCompany;
-import io.github.sambrodeur.resource.server.demo.contact.Contact;
 import io.github.sambrodeur.resource.server.demo.contact.service.ContactService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 @Service

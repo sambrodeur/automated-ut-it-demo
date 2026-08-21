@@ -18,6 +18,4 @@ public interface CompanyDAO {
   void deleteById(Integer id);
 
   List<Company> findByCompanyType(CompanyType companyType);
-
-  List<Company> findByName(String name);
 }

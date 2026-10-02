@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CompanyDAO {
 
-  void save(Company company);
+  Company save(Company company);
 
   Company findById(Integer id);
 

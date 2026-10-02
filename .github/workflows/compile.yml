@@ -29,3 +29,6 @@ jobs:
 
     - name: Package the application
       run: mvn package -DskipTests -B
+
+    - name: Run integration tests
+      run: mvn test -B -Pitest

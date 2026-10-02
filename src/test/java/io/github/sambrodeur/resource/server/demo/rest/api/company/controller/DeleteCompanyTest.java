@@ -36,10 +36,4 @@ class DeleteCompanyTest extends CompanyControllerTest {
   void deleteCompanySuccess() {
     assertNotNull(companyController.deleteCompany(id));
   }
-
-  @Test
-  void deleteCompnayFail() {
-    doThrow(new RuntimeException("Company not found")).when(companyService).deleteCompany(any());
-    assertNotNull(companyController.deleteCompany(id));
-  }
 }

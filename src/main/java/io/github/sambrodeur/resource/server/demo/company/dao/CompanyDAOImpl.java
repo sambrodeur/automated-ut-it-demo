@@ -20,7 +20,7 @@ public class CompanyDAOImpl implements CompanyDAO {
   private final JdbcClient jdbcClient;
 
   @Override
-  public void save(Company company) {
+  public Company save(Company company) {
     String sql = """
         INSERT INTO company (name, company_type, creation_date, modification_date)
         VALUES (:NAME, :COMPANY_TYPE, :CREATION_DATE, :MODIFICATION_DATE)
@@ -42,6 +42,7 @@ public class CompanyDAOImpl implements CompanyDAO {
       company.setCreationDate(now);
       company.setModificationDate(now);
     }
+    return company;
   }
 
   @Override

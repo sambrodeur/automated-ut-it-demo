@@ -71,10 +71,10 @@ public class CompanyController {
   @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
   @ApiResponse(responseCode = "404", description = "Company not found", content = @Content)
   @PutMapping(value = "/{id}", version = "1")
-  public ResponseEntity<Company> updateCompany(@PathVariable Integer id, @RequestBody CRUDCompanyModel crudCompanyModel) {
+  public ResponseEntity<CompanyModel> updateCompany(@PathVariable Integer id, @RequestBody CRUDCompanyModel crudCompanyModel) {
     try {
       Company updatedCompany = companyService.updateCompany(id, companyModelMapper.map(crudCompanyModel));
-      return ResponseEntity.ok(updatedCompany);
+      return ResponseEntity.ok(companyModelMapper.map(updatedCompany));
     } catch (IllegalArgumentException e) {
       log.info("Company not found", e);
       return ResponseEntity.notFound().build();
@@ -86,13 +86,9 @@ public class CompanyController {
   @ApiResponse(responseCode = "404", description = "Company not found", content = @Content)
   @DeleteMapping(value = "/{id}", version = "1")
   public ResponseEntity<Void> deleteCompany(@PathVariable Integer id) {
-    try {
       companyService.deleteCompany(id);
+
       return ResponseEntity.noContent().build();
-    } catch (Exception ex) {
-      log.info("Company not found", ex);
-      return ResponseEntity.notFound().build();
-    }
   }
 
   @Operation(summary = "Get companies by type", description = "Retrieves all companies of a specific type")

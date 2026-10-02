@@ -1,0 +1,42 @@
+package io.github.sambrodeur.resource.server.demo.company.service;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.jdbc.JdbcTestUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest
+class DeleteCompanyIntegrationTest extends CompanyServiceImplIntegrationTest {
+
+  @Autowired
+  private CompanyService companyService;
+
+  private Integer id;
+
+  @BeforeEach
+  void setUp() {
+    insertData();
+
+    id = 1000;
+  }
+
+  @AfterEach
+  void tearDown() {
+    clearData();
+  }
+
+  @Test
+  void deleteCompanySuccess() {
+    assertEquals(COMPANY_COUNT, JdbcTestUtils.countRowsInTable(jdbcClient, TABLE_COMPANY));
+    assertEquals(CONTACT_COUNT, JdbcTestUtils.countRowsInTable(jdbcClient, TABLE_CONTACT));
+
+    companyService.deleteCompany(id);
+
+    assertEquals(COMPANY_COUNT - 1, JdbcTestUtils.countRowsInTable(jdbcClient, TABLE_COMPANY));
+    assertEquals(CONTACT_COUNT - 2, JdbcTestUtils.countRowsInTable(jdbcClient, TABLE_CONTACT));
+  }
+}

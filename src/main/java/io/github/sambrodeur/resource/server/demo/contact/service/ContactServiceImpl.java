@@ -1,7 +1,6 @@
 package io.github.sambrodeur.resource.server.demo.contact.service;
 
 import io.github.sambrodeur.resource.server.demo.contact.Contact;
-import io.github.sambrodeur.resource.server.demo.contact.ContactType;
 import io.github.sambrodeur.resource.server.demo.contact.dao.ContactDAO;
 import io.github.sambrodeur.resource.server.demo.contact.dto.CRUDContact;
 import io.github.sambrodeur.resource.server.demo.contact.dto.ContactDB;

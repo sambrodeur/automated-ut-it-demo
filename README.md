@@ -6,7 +6,7 @@ Boot application that provides a RESTful API for managing companies and their as
 
 ## Technologies Used
 
-- **Spring Boot 4.0.6**: Framework for building the application
+- **Spring Boot 4.1.1**: Framework for building the application
 - **Java 25**: Programming language
 - **H2 Database**: In-memory relational database
 - **Spring Web**: For RESTful web services
@@ -25,6 +25,11 @@ Boot application that provides a RESTful API for managing companies and their as
 - Java 25 or higher
 - Maven 3.6+ (or use the included Maven wrapper)
 - Gradle (can be used with tasks but not shown in this example)
+
+## Configure database with data
+
+- Go to `src/main/resources` and rename `data.tmp` file to `data.sql`. This file contains SQL statements to insert sample data into the H2 database.
+- For the integration tests to work, the H2 database must not be initialized with the `data.sql` file. The integration tests will handle data setup and teardown automatically. Make sure to rename the file back to `data.tmp` before running integration tests.
 
 ## How to implement the tests solution
 
@@ -330,6 +335,102 @@ mvn clean test
 ```bash
 mvn clean install -DskipTests
 ```
+
+### Step 3 - Implementing Integration Tests with Real Database Verification
+
+#### 1. **Overview**
+Step 3 changes the testing strategy from isolated unit tests to verification against the real Spring application context and the H2 database. The goal is no longer only to validate method behavior with mocks, but to confirm that the DAO, service, and controller layers work together with actual SQL execution, data persistence, and state cleanup.
+
+#### 2. **Why the Testing Concept Changed**
+
+- **Unit tests** validate logic in isolation using mocks and generated test objects.
+- **Integration tests** validate that the application can boot correctly, inject dependencies, execute SQL against H2, and maintain database state across CRUD operations.
+- **Problem solved**: they catch issues that unit tests miss, such as bad SQL, wrong implementations of business logic, missing mappings, incorrect schema assumptions, or invalid database state transitions.
+- **Result**: the project now verifies business behavior at the system boundary, not only inside a mocked layer.
+
+#### 3. **Spring Boot Test Context and Real Data Access**
+
+- **What Changed**: Integration tests are annotated with `@SpringBootTest` and run with the full application context.
+- **Purpose**: Ensures the app loads as it does in production, including beans, JDBC configuration, validation logic, and database wiring.
+- **Example pattern**:
+  ```java
+  @SpringBootTest
+  class CreateCompanyIntegrationTest extends CompanyServiceImplIntegrationTest {
+      @Autowired
+      private CompanyService companyService;
+
+      @BeforeEach
+      void setUp() {
+          crudCompany = getCRUDCompany();
+      }
+
+      @AfterEach
+      void tearDown() {
+          clearData();
+      }
+  }
+  ```
+- **Benefit**: Verifies the application works as a complete system instead of only through mocked collaborators.
+
+#### 4. **Shared Base Test Utilities for Database State Management**
+
+- **What Changed**: A reusable `CommonIntegrationTest` class centralizes database cleanup and validation helpers.
+- **Purpose**: Keeps integration tests consistent, avoids duplicated SQL assertions, and ensures each test starts from a clean state.
+- **Key behavior**:
+  ```java
+  protected void clearData() {
+      JdbcTestUtils.deleteFromTables(jdbcClient, TABLE_CONTACT, TABLE_COMPANY);
+  }
+  ```
+- **Benefit**: Prevents test pollution between methods and ensures deterministic results.
+
+#### 5. **Test Data Setup and Validation Against the Real Database**
+
+- **What Changed**: Integration tests insert known rows with `JdbcClient`, then assert that the database contains the expected values.
+- **Purpose**: Confirms that operations are not only invoked correctly, but also persisted and retrieved correctly from the actual database.
+- **Example pattern**:
+  ```java
+  void insertCompanies() {
+      jdbcClient.sql("""
+            INSERT INTO company (id, name, company_type, creation_date, modification_date) VALUES
+            (1000, 'Company1', 1, now(), now()),
+            (1001, 'Company2', 2, now(), now()),
+            (1002, 'Company3', 3, now(), now()),
+            (1003, 'Company4', 4, now(), now())
+      """).update();
+  }
+  ```
+- **Validation approach**: use `JdbcTestUtils.countRowsInTable(...)` and direct SQL queries to check stored values, creation timestamps, and modifications.
+- **Benefit**: Confirms that persistence logic, schema definitions, and query behavior match the expected application behavior.
+
+#### 6. **Integration Coverage by Layer**
+
+The integration tests cover the same application components as the unit tests, but with real database interaction:
+
+- **DAO Layer**: `FindById`, `Save`, `Update`, `DeleteById`, `FindAll`, and query-by-type scenarios
+- **Service Layer**: create, retrieve, update, and delete operations using real H2-backed persistence
+- **Controller Layer**: real HTTP request/response behavior through the Spring MVC stack
+
+Each test verifies actual state transitions, not just mocked call sequences.
+
+#### 7. **Running Integration Tests**
+
+The project defines an `itest` Maven profile to include the `src/integration-test/java` sources and execute only tests matching `*IntegrationTest.java`.
+
+```bash
+mvn clean test -P itest
+```
+
+- **Benefit**: Keeps unit tests fast while providing a dedicated path for system-level verification.
+
+#### 8. **Summary of the New Concept**
+
+The key conceptual change since the last commit is this:
+
+- Before: tests primarily validated isolated logic using mocks and generated objects.
+- Now: tests validate real integration behavior with the Spring application context and H2 database.
+
+This gives the project a more complete safety net by covering the boundary between code and persistence, which is exactly where many bugs appear in real-world applications.
 
 ## License
 

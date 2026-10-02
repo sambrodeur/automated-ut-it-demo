@@ -54,11 +54,11 @@ public class ContactDAOImpl implements ContactDAO {
     String sql = """
         SELECT *
         FROM contact
-        WHERE id = ?
+        WHERE id = :ID
         """;
 
     return jdbcClient.sql(sql)
-      .param("id", id)
+      .param("ID", id)
       .query(this::mapRow)
       .single();
   }
